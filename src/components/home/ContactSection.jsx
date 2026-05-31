@@ -5,7 +5,7 @@ import { Fade } from "react-awesome-reveal";
 import SectionHeader from "@/components/shared/SectionHeader";
 
 export default function ContactSection() {
-  const [formData, setFormData] = useState({ name: "", email: "", message: "" });
+  const [formData, setFormData] = useState({ name: "", email: "", message: "", website: "" });
   const [status, setStatus] = useState("idle");
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -67,6 +67,18 @@ export default function ContactSection() {
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-5 mt-10" aria-label="Contact form">
+              <div aria-hidden="true" className="absolute left-[-9999px] opacity-0 pointer-events-none">
+                <label htmlFor="website">Website</label>
+                <input
+                  type="text"
+                  id="website"
+                  name="website"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  value={formData.website}
+                  onChange={handleChange}
+                />
+              </div>
               <div className="space-y-1.5">
                 <label htmlFor="name" className="block text-sm font-semibold text-brand-dark uppercase tracking-widest font-brand">
                   Name

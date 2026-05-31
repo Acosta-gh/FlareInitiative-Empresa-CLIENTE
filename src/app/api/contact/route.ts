@@ -1,7 +1,7 @@
-export const runtime = 'edge';
-
 import { NextResponse } from 'next/server';
 import { Resend } from 'resend';
+
+const ALLOWED_ORIGINS = ['https://flareinitiative.org', 'http://localhost:3000'];
 
 const from = process.env.EMAIL_FROM || 'The Flare Initiative <onboarding@resend.dev>';
 const to = process.env.EMAIL_TO || 'info@flareinitiative.org';
@@ -103,7 +103,24 @@ function autoReplyHtml(name: string) {
 
 export async function POST(request: Request) {
   try {
-    const { name, email, message } = await request.json();
+    const origin = request.headers.get('origin');
+    const referer = request.headers.get('referer');
+    if (origin && !ALLOWED_ORIGINS.includes(origin)) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+    if (referer && !ALLOWED_ORIGINS.some((o) => referer.startsWith(o))) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
+    const data = await request.json();
+
+    if (data.website) {
+      return NextResponse.json({ error: 'Spam detected' }, { status: 400 });
+    }
+
+    const name = (data.name || '').trim().slice(0, 100);
+    const email = (data.email || '').trim().slice(0, 320);
+    const message = (data.message || '').trim().slice(0, 5000);
 
     if (!name || !email || !message) {
       return NextResponse.json(

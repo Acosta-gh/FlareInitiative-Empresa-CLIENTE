@@ -1,3 +1,5 @@
+export const revalidate = 3600;
+
 import dynamic from 'next/dynamic';
 import HeroSection from "@/components/home/HeroSection";
 import AboutSection from "@/components/home/AboutSection";
