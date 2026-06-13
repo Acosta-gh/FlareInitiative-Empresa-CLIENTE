@@ -3,7 +3,7 @@ export const runtime = 'edge';
 import { NextResponse } from 'next/server';
 import { Resend } from 'resend';
 
-const ALLOWED_ORIGINS = ['https://flareinitiative.org'];
+const ALLOWED_ORIGINS = ['https://flareinitiative.org', 'https://www.flareinitiative.org'];
 const ALLOWED_LOCALHOST_PORTS = ['3000', '3001', '3002', '3003', '3004', '3005'];
 
 function isAllowed(url: string): boolean {
