@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { ArrowRight, CheckCircle, AlertCircle, Loader2 } from "lucide-react";
 import { Fade } from "react-awesome-reveal";
 import SectionHeader from "@/components/shared/SectionHeader";
@@ -8,6 +8,7 @@ export default function ContactSection() {
   const [formData, setFormData] = useState({ name: "", email: "", message: "", website: "" });
   const [status, setStatus] = useState("idle");
   const [errorMessage, setErrorMessage] = useState("");
+  const loadTime = useRef(Date.now());
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -19,11 +20,16 @@ export default function ContactSection() {
     setStatus("loading");
     setErrorMessage("");
 
+    const submitData = {
+      ...formData,
+      timestamp: loadTime.current,
+    };
+
     try {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(submitData),
       });
 
       const data = await res.json();
@@ -35,6 +41,7 @@ export default function ContactSection() {
       setStatus("success");
       setFormData({ name: "", email: "", message: "" });
     } catch (err) {
+      console.error("[Contact Form] Submit failed:", err.message);
       setStatus("error");
       setErrorMessage(err.message || "Failed to send message. Please try again.");
     }
@@ -67,7 +74,7 @@ export default function ContactSection() {
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-5 mt-10" aria-label="Contact form">
-              <div aria-hidden="true" className="absolute left-[-9999px] opacity-0 pointer-events-none">
+              <div aria-hidden="true" className="h-0 min-h-0 overflow-hidden opacity-0 pointer-events-none" style={{ position: "fixed", top: "-100vh", left: 0 }}>
                 <label htmlFor="website">Website</label>
                 <input
                   type="text"

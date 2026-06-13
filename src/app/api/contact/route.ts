@@ -3,7 +3,17 @@ export const runtime = 'edge';
 import { NextResponse } from 'next/server';
 import { Resend } from 'resend';
 
-const ALLOWED_ORIGINS = ['https://flareinitiative.org', 'http://localhost:3000'];
+const ALLOWED_ORIGINS = ['https://flareinitiative.org'];
+const ALLOWED_LOCALHOST_PORTS = ['3000', '3001', '3002', '3003', '3004', '3005'];
+
+function isAllowed(url: string): boolean {
+  if (ALLOWED_ORIGINS.some((o) => url.startsWith(o))) return true;
+  try {
+    const parsed = new URL(url);
+    if (parsed.hostname === 'localhost' && ALLOWED_LOCALHOST_PORTS.includes(parsed.port)) return true;
+  } catch {}
+  return false;
+}
 
 const from = process.env.EMAIL_FROM || 'The Flare Initiative <onboarding@resend.dev>';
 const to = process.env.EMAIL_TO || 'info@flareinitiative.org';
@@ -107,16 +117,28 @@ export async function POST(request: Request) {
   try {
     const origin = request.headers.get('origin');
     const referer = request.headers.get('referer');
-    if (origin && !ALLOWED_ORIGINS.includes(origin)) {
+    const userAgent = request.headers.get('user-agent');
+
+    console.log(`[Contact Form] Request received — origin=${origin} referer=${referer} user-agent=${userAgent}`);
+
+    if (origin && !isAllowed(origin)) {
+      console.log(`[Contact Form] Forbidden — origin="${origin}" not allowed`);
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
-    if (referer && !ALLOWED_ORIGINS.some((o) => referer.startsWith(o))) {
+    if (referer && !isAllowed(referer)) {
+      console.log(`[Contact Form] Forbidden — referer="${referer}" not allowed`);
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     const data = await request.json();
 
     if (data.website) {
+      console.log(`[Contact Form] Spam detected (honeypot) — website="${data.website}"`);
+      return NextResponse.json({ error: 'Spam detected' }, { status: 400 });
+    }
+
+    if (data.timestamp && Date.now() - Number(data.timestamp) < 3000) {
+      console.log(`[Contact Form] Spam detected (timestamp) — age=${Date.now() - Number(data.timestamp)}ms`);
       return NextResponse.json({ error: 'Spam detected' }, { status: 400 });
     }
 

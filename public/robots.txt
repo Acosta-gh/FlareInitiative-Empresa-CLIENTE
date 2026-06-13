@@ -1,6 +1,5 @@
 User-agent: *
-Allow: /
 Disallow: /api/
-Disallow: /contact
+Disallow: /_next/
 
 Sitemap: https://flareinitiative.org/sitemap.xml
