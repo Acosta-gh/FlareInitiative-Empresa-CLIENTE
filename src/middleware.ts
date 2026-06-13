@@ -4,15 +4,15 @@ import type { NextRequest } from 'next/server';
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
 const RATE_LIMIT_WINDOW = 60_000;
 const RATE_LIMIT_MAX = 5;
-const CLEANUP_INTERVAL = 600_000;
 
-if (typeof setInterval !== 'undefined') {
-  setInterval(() => {
-    const now = Date.now();
-    for (const [key, value] of rateLimitMap) {
-      if (now > value.resetAt) rateLimitMap.delete(key);
+// Lazy cleanup function to avoid memory leak without using setInterval (unsupported in Edge/Cloudflare Workers)
+function cleanupExpiredLimits() {
+  const now = Date.now();
+  for (const [key, value] of rateLimitMap) {
+    if (now > value.resetAt) {
+      rateLimitMap.delete(key);
     }
-  }, CLEANUP_INTERVAL);
+  }
 }
 
 const BLOCKED_USER_AGENTS = [
@@ -26,7 +26,7 @@ const BLOCKED_USER_AGENTS = [
   'zgrab',
 ];
 
-export function proxy(request: NextRequest) {
+export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const response = NextResponse.next();
 
@@ -49,6 +49,7 @@ export function proxy(request: NextRequest) {
 
   // --- Rate Limiting (API routes only) ---
   if (pathname.startsWith('/api/')) {
+    cleanupExpiredLimits();
     const ip =
       request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
       request.headers.get('x-real-ip') ||
