@@ -1,6 +1,6 @@
 "use client";
 import { Fade } from "react-awesome-reveal";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight,ExternalLink } from "lucide-react";
 import backgroundFirefighterImage from "@/assets/images/background.webp";
 
 export default function HeroSection() {
@@ -43,6 +43,13 @@ export default function HeroSection() {
             >
               Learn More
               <ArrowRight className="w-4 h-4" />
+            </a>
+              <a
+              href="https://store.flareinitiative.org/"
+              className="mt-2 inline-flex items-center gap-3 px-[1.95rem] py-3.5  text-brand-orange border-2  font-semibold text-sm uppercase tracking-widest cursor-pointer"
+            >
+              Support Us
+              <ExternalLink className="w-4 h-4 " />
             </a>
           </Fade>
         </div>
