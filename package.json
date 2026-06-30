@@ -11,6 +11,7 @@
   "dependencies": {
     "@remotion/player": "^4.0.425",
     "@tailwindcss/typography": "^0.5.19",
+    "framer-motion": "^12.42.2",
     "hamburger-react": "^2.5.2",
     "lucide-react": "^0.575.0",
     "motion": "^12.35.0",

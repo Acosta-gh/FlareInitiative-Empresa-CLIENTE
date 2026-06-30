@@ -14,6 +14,9 @@ importers:
       '@tailwindcss/typography':
         specifier: ^0.5.19
         version: 0.5.20(tailwindcss@4.3.2)
+      framer-motion:
+        specifier: ^12.42.2
+        version: 12.42.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       hamburger-react:
         specifier: ^2.5.2
         version: 2.5.2(react@19.2.3)
@@ -1267,8 +1270,8 @@ packages:
     resolution: {integrity: sha512-dKx12eRCVIzqCxFGplyFKJMPvLEWgmNtUrpTiJIR5u97zEhRG8ySrtboPHZXx7daLxQVrl643cTzbab2tkQjxg==}
     engines: {node: '>= 0.4'}
 
-  framer-motion@12.42.1:
-    resolution: {integrity: sha512-Q2rHK14w8lavWk3MiF1wihcV1sCVsSYrRSaoqJ5eChG7CUNTKxDUgoMesiUSmMBjFpBRPWGrLvzymRrm0jnwFA==}
+  framer-motion@12.42.2:
+    resolution: {integrity: sha512-5XY9luDiu0oHfHBjpDthFMh0ES+122w6p/papSJBweMkO8Sn+PW2QaEgRblQBpWFnuvZS5qvarpt/hO2pjGmnw==}
     peerDependencies:
       '@emotion/is-prop-valid': '*'
       react: ^18.0.0 || ^19.0.0
@@ -1702,8 +1705,8 @@ packages:
   minimist@1.2.8:
     resolution: {integrity: sha512-2yyAR8qBkN3YuheJanUpWC5U3bb5osDywNB8RzDVlDwDHbocAJveqqj1u8+SVD7jkWT4yvsHCpWqqWqAxb0zCA==}
 
-  motion-dom@12.42.1:
-    resolution: {integrity: sha512-dnBr0vtpJLvTVm+SIi8o7yh8jD57Bv7++nkkoeq85QW+QJqM+RIIoyvu5LyZ186dILUMHzkxv5sQveTxuOcOBw==}
+  motion-dom@12.42.2:
+    resolution: {integrity: sha512-5gIMWLp/PycBtJRJWRgjxke5n8dlvkSn2DrYW+tr3XcqAZY1xZh6BJyooJXCM8wdfM7wfMjkBJNLge1CKPUIRA==}
 
   motion-utils@12.39.0:
     resolution: {integrity: sha512-8nadJAJjTtqRkmRF36FoJTrywK9nnFmnPwnSMyxaOCU7GDjN9RTMJIxx9De8ErM+vpPhMccr/6fo5WciyQLnMQ==}
@@ -3620,9 +3623,9 @@ snapshots:
     dependencies:
       is-callable: 1.2.7
 
-  framer-motion@12.42.1(react-dom@19.2.3(react@19.2.3))(react@19.2.3):
+  framer-motion@12.42.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3):
     dependencies:
-      motion-dom: 12.42.1
+      motion-dom: 12.42.2
       motion-utils: 12.39.0
       tslib: 2.8.1
     optionalDependencies:
@@ -4022,7 +4025,7 @@ snapshots:
 
   minimist@1.2.8: {}
 
-  motion-dom@12.42.1:
+  motion-dom@12.42.2:
     dependencies:
       motion-utils: 12.39.0
 
@@ -4030,7 +4033,7 @@ snapshots:
 
   motion@12.42.1(react-dom@19.2.3(react@19.2.3))(react@19.2.3):
     dependencies:
-      framer-motion: 12.42.1(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      framer-motion: 12.42.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       tslib: 2.8.1
     optionalDependencies:
       react: 19.2.3
