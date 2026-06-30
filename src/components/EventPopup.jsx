@@ -99,9 +99,9 @@ export default function EventPopup() {
 
                 </div>
 
-                <div className="bg-brand-blue/5 border border-brand-blue/20 rounded-lg p-3">
+                <div className="bg-brand-blue/5 border border-brand-blue/20 rounded-lg p-3 min-h-[280px] flex items-center justify-center">
                   <Fade key={indice}>
-                    <img src={images[indice].src} className="m-auto"></img>
+                    <img src={images[indice].src} className="m-auto max-h-[260px] object-contain"></img>
                   </Fade>
                 </div>
 
