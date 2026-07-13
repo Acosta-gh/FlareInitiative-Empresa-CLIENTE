@@ -45,21 +45,44 @@ const BLOCKED_UA_PATTERNS = [
 const ALLOWED_BOT_PATTERNS = ALLOWED_BOTS.map((bot) => new RegExp(bot, 'i'));
 
 function getBotCategory(userAgent: string): 'allowed' | 'blocked' | null {
-  if (!userAgent) return 'blocked';
-  for (const pattern of ALLOWED_BOT_PATTERNS) {
-    if (pattern.test(userAgent)) return 'allowed';
+  if (!userAgent) {
+    console.log(`[Middleware] Empty UA classified as blocked`);
+    return 'blocked';
   }
-  if (BLOCKED_UA_PATTERNS.some((p) => p.test(userAgent))) return 'blocked';
-  if (BLOCKED_USER_AGENTS.some((agent) => userAgent.includes(agent))) return 'blocked';
+  for (const pattern of ALLOWED_BOT_PATTERNS) {
+    if (pattern.test(userAgent)) {
+      console.log(`[Middleware] Allowed bot matched — pattern=${pattern.source} ua="${userAgent}"`);
+      return 'allowed';
+    }
+  }
+  for (const p of BLOCKED_UA_PATTERNS) {
+    if (p.test(userAgent)) {
+      console.log(`[Middleware] Blocked by UA pattern — pattern=${p.source} ua="${userAgent}"`);
+      return 'blocked';
+    }
+  }
+  for (const agent of BLOCKED_USER_AGENTS) {
+    if (userAgent.includes(agent)) {
+      console.log(`[Middleware] Blocked by UA substring — match="${agent}" ua="${userAgent}"`);
+      return 'blocked';
+    }
+  }
+  console.log(`[Middleware] Unknown UA category — ua="${userAgent}"`);
   return null;
 }
 
 function isHeadlessBrowser(headers: Headers, userAgent: string): boolean {
   const ua = userAgent || '';
 
-  if (!ua) return true;
+  if (!ua) {
+    console.log(`[Middleware] Headless: empty UA`);
+    return true;
+  }
 
-  if (/curl|wget|go-http-client|python-requests/.test(ua)) return true;
+  if (/curl|wget|go-http-client|python-requests/.test(ua)) {
+    console.log(`[Middleware] Headless: known tool UA — ua="${ua}"`);
+    return true;
+  }
 
   const acceptLanguage = headers.get('accept-language');
   const accept = headers.get('accept') || '';
@@ -67,12 +90,17 @@ function isHeadlessBrowser(headers: Headers, userAgent: string): boolean {
   const acceptEncoding = headers.get('accept-encoding');
 
   let signals = 0;
-  if (!acceptLanguage) signals++;
-  if (!accept.includes('text/html') && !accept.includes('application/json') && !accept.includes('*/*')) signals++;
-  if (!secChUa) signals++;
-  if (!acceptEncoding) signals++;
+  const details: string[] = [];
+  if (!acceptLanguage) { signals++; details.push('no-accept-language'); }
+  if (!accept.includes('text/html') && !accept.includes('application/json') && !accept.includes('*/*')) { signals++; details.push(`accept-no-standard (accept="${accept}")`); }
+  if (!secChUa) { signals++; details.push('no-sec-ch-ua'); }
+  if (!acceptEncoding) { signals++; details.push('no-accept-encoding'); }
 
-  return signals >= 3;
+  const isHeadless = signals >= 3;
+  if (isHeadless) {
+    console.log(`[Middleware] Headless: ${signals}/4 signals — ${details.join(', ')} ua="${ua}"`);
+  }
+  return isHeadless;
 }
 
 export function middleware(request: NextRequest) {
@@ -94,12 +122,14 @@ export function middleware(request: NextRequest) {
              'unknown';
 
   if (ip === '127.0.0.1' || ip === '::1' || ip === 'unknown') {
+    console.log(`[Middleware] Local skip — path=${pathname} ip=${ip} method=${request.method}`);
     return response;
   }
 
   const botCategory = getBotCategory(userAgent);
 
   if (botCategory === 'allowed') {
+    console.log(`[Middleware] Allowed — path=${pathname} ip=${ip} ua="${request.headers.get('user-agent')}"`);
     return response;
   }
 
@@ -129,9 +159,13 @@ export function middleware(request: NextRequest) {
       }
     } else {
       rateLimitMap.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW });
+      if (rateLimitMap.size % 50 === 0) {
+        console.log(`[Middleware] Rate limit map size=${rateLimitMap.size}`);
+      }
     }
   }
 
+  console.log(`[Middleware] Pass — path=${pathname} ip=${ip} method=${request.method} ua="${request.headers.get('user-agent')}"`);
   return response;
 }
 
