@@ -21,7 +21,7 @@ const BLOCKED_USER_AGENTS = [
   'facebookexternalhit', 'twitterbot', 'linkedinbot', 'slackbot', 'discordbot',
   'headless', 'phantomjs', 'puppeteer', 'playwright', 'selenium', 'webdriver',
   'crawler', 'spider', 'scraper', 'botlink', 'heritrix', 'httrack',
-  'java/', 'curl/', 'wget/', 'ruby', 'go-http-client', 'axios',
+  'java/', 'wget/', 'ruby', 'go-http-client', 'axios',
   'lighthouse', 'chrome-lighthouse', 'google page speed',
   'petalbot', 'pagespeed', 'pingdom', 'newrelic', 'datadog',
   'zgrab', 'netsystemsresearch', 'netcraft',
@@ -36,15 +36,11 @@ function isHeadlessBrowser(headers: Headers): boolean {
   const missing: string[] = [];
 
   if (!headers.get('accept-language')) missing.push('accept-language');
-  if (!headers.get('sec-fetch-site')) missing.push('sec-fetch-site');
-  if (!headers.get('sec-fetch-mode')) missing.push('sec-fetch-mode');
-  if (!headers.get('sec-fetch-dest')) missing.push('sec-fetch-dest');
 
   const accept = headers.get('accept') || '';
   if (!accept.includes('text/html')) missing.push('accept (no text/html)');
 
-  if (missing.length >= 3) return true;
-  return false;
+  return missing.length >= 2;
 }
 
 export function middleware(request: NextRequest) {
@@ -64,6 +60,10 @@ export function middleware(request: NextRequest) {
   const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
              request.headers.get('x-real-ip') ||
              'unknown';
+
+  if (ip === '127.0.0.1' || ip === '::1' || ip === 'unknown') {
+    return response;
+  }
 
   if (isHeadlessBrowser(request.headers)) {
     console.log(`[Middleware] Blocked headless — path=${pathname} ip=${ip} user-agent="${request.headers.get('user-agent')}"`);
