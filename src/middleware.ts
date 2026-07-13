@@ -14,11 +14,21 @@ function cleanupExpiredLimits() {
   }
 }
 
+const ALLOWED_BOTS = [
+  'googlebot',
+  'bingbot',
+  'duckduckbot',
+  'yandexbot',
+  'baiduspider',
+  'twitterbot',
+  'facebookexternalhit',
+];
+
 const BLOCKED_USER_AGENTS = [
   'bytespider', 'scrapy', 'go-http-client', 'python-requests', 'python-urllib',
   'masscan', 'nmap', 'zgrab', 'semrush', 'ahrefs', 'dotbot', 'mj12bot',
   'dataforseo', 'gptbot', 'claudebot', 'anthropic-ai', 'perplexity',
-  'facebookexternalhit', 'twitterbot', 'linkedinbot', 'slackbot', 'discordbot',
+  'linkedinbot', 'slackbot', 'discordbot',
   'headless', 'phantomjs', 'puppeteer', 'playwright', 'selenium', 'webdriver',
   'crawler', 'spider', 'scraper', 'botlink', 'heritrix', 'httrack',
   'java/', 'wget/', 'ruby', 'go-http-client', 'axios',
@@ -32,15 +42,37 @@ const BLOCKED_UA_PATTERNS = [
   /selenium/i, /webdriver/i, /^$/,
 ];
 
-function isHeadlessBrowser(headers: Headers): boolean {
-  const missing: string[] = [];
+const ALLOWED_BOT_PATTERNS = ALLOWED_BOTS.map((bot) => new RegExp(bot, 'i'));
 
-  if (!headers.get('accept-language')) missing.push('accept-language');
+function getBotCategory(userAgent: string): 'allowed' | 'blocked' | null {
+  if (!userAgent) return 'blocked';
+  for (const pattern of ALLOWED_BOT_PATTERNS) {
+    if (pattern.test(userAgent)) return 'allowed';
+  }
+  if (BLOCKED_UA_PATTERNS.some((p) => p.test(userAgent))) return 'blocked';
+  if (BLOCKED_USER_AGENTS.some((agent) => userAgent.includes(agent))) return 'blocked';
+  return null;
+}
 
+function isHeadlessBrowser(headers: Headers, userAgent: string): boolean {
+  const ua = userAgent || '';
+
+  if (!ua) return true;
+
+  if (/curl|wget|go-http-client|python-requests/.test(ua)) return true;
+
+  const acceptLanguage = headers.get('accept-language');
   const accept = headers.get('accept') || '';
-  if (!accept.includes('text/html')) missing.push('accept (no text/html)');
+  const secChUa = headers.get('sec-ch-ua');
+  const acceptEncoding = headers.get('accept-encoding');
 
-  return missing.length >= 2;
+  let signals = 0;
+  if (!acceptLanguage) signals++;
+  if (!accept.includes('text/html') && !accept.includes('application/json') && !accept.includes('*/*')) signals++;
+  if (!secChUa) signals++;
+  if (!acceptEncoding) signals++;
+
+  return signals >= 3;
 }
 
 export function middleware(request: NextRequest) {
@@ -65,13 +97,19 @@ export function middleware(request: NextRequest) {
     return response;
   }
 
-  if (isHeadlessBrowser(request.headers)) {
-    console.log(`[Middleware] Blocked headless — path=${pathname} ip=${ip} user-agent="${request.headers.get('user-agent')}"`);
+  const botCategory = getBotCategory(userAgent);
+
+  if (botCategory === 'allowed') {
+    return response;
+  }
+
+  if (botCategory === 'blocked') {
+    console.log(`[Middleware] Blocked bot UA — path=${pathname} ip=${ip} user-agent="${request.headers.get('user-agent')}"`);
     return new NextResponse(' ', { status: 403 });
   }
 
-  if (BLOCKED_USER_AGENTS.some((agent) => userAgent.includes(agent))) {
-    console.log(`[Middleware] Blocked bot UA — path=${pathname} ip=${ip} user-agent="${request.headers.get('user-agent')}"`);
+  if (isHeadlessBrowser(request.headers, userAgent)) {
+    console.log(`[Middleware] Blocked headless — path=${pathname} ip=${ip} user-agent="${request.headers.get('user-agent')}"`);
     return new NextResponse(' ', { status: 403 });
   }
 
