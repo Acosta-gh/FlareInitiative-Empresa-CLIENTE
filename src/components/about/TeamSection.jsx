@@ -39,7 +39,7 @@ const teamMembers = [
   ,
     {
     name: "YOU",
-    role: "Supoort Us Today",
+    role: "Join Us Today",
   },
 ];
 
