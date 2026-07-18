@@ -36,6 +36,11 @@ const teamMembers = [
     role: "Director",
     image: james,
   },
+  ,
+    {
+    name: "YOU",
+    role: "Supoort Us Today",
+  },
 ];
 
 export default function TeamSection() {
