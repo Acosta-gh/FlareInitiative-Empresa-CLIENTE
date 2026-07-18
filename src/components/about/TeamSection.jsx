@@ -56,7 +56,7 @@ export default function TeamSection() {
           </Fade>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12">
+        <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-3 gap-x-6 gap-y-12">
           {teamMembers.map((member, index) => (
             <Fade key={index} triggerOnce delay={index * 100} direction="up">
               <div className="group">
