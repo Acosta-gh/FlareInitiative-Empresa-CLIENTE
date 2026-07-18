@@ -26,7 +26,7 @@ const cards = [
     description:
       "Fund the database that will drive evidence-based prevention. Every contribution helps us build the infrastructure needed to save lives.",
     cta: "Donate Now",
-    ctaHref: "https://www.zeffy.com/en-CA/peer-to-peer/trevors-month-for-first-responder-mental-health",
+    ctaHref: "https://www.zeffy.com/en-CA/donation-form/donate-to-help-first-responders-2",
     ctaStyle: "bg-brand-dark text-white hover:bg-brand-dark/85",
     disableCta: false,
     external: true,
@@ -39,10 +39,12 @@ const cards = [
     title: "Spread Awareness",
     description:
       "Help bring visibility to this critical mental health issue. Share our mission, host a conversation, or engage your community.",
-    cta: "Learn More",
-    ctaHref: "#about",
+    cta: "Wear the Cause", 
+    ctaHref: "https://store.flareinitiative.org/",
     ctaStyle: "bg-brand-dark text-white hover:bg-brand-dark/85",
-    disableCta: true,
+    disableCta: false,
+    external: true,
+
   },
 ];
 

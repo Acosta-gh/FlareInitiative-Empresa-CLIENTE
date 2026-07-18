@@ -2,11 +2,12 @@
 
 import Image from "next/image";
 import { Fade } from "react-awesome-reveal";
-import firefighter from "@/assets/images/firefighter.webp";
-import trio from "@/assets/images/threepeople.webp";
-import trio2 from "@/assets/images/threepeople2.webp";
-import gear from "@/assets/images/gear.webp";
+
 import gavin from "@/assets/images/team/gavin.webp";
+import bruce from "@/assets/images/team/bruce.webp";
+import james from "@/assets/images/team/james.webp";
+import samantha from "@/assets/images/team/samantha.webp";
+import christine from "@/assets/images/team/christine.webp";
 
 const teamMembers = [
   {
@@ -15,16 +16,25 @@ const teamMembers = [
     image: gavin,
   },
   {
-    name: "TBD",
-    role: "Coming Soon",
+    name: "Bruce Price",
+    role: "Director",
+    image: bruce,
+
   },
   {
-    name: "TBD",
-    role: "Coming Soon",
+    name: "Samantha Mason",
+    role: "Director",
+    image: samantha,
   },
   {
-    name: "TBD",
-    role: "Coming Soon",
+    name: "Christine Ibbotson",
+    role: "Director",
+    image: christine,
+  },
+    {
+    name: "James Betterton",
+    role: "Director",
+    image: james,
   },
 ];
 
@@ -50,14 +60,16 @@ export default function TeamSection() {
           {teamMembers.map((member, index) => (
             <Fade key={index} triggerOnce delay={index * 100} direction="up">
               <div className="group">
-                <div className={`relative h-[400px] w-full rounded-2xl overflow-hidden mb-6 shadow-lg transform transition-transform duration-500 ${index > 0 ? 'group-hover:scale-[1.02]' : 'group-hover:scale-[1.02]'}`}>
-                  <Image
-                    src={member.image}
-                    alt={member.name}
-                    fill
-                    className={`object-cover ${index > 0 ? 'grayscale opacity-30' : 'grayscale group-hover:grayscale-0 transition-all duration-700'}`}
-                  />
-                  {index > 0 && (
+                <div className={`relative h-[400px] w-full rounded-2xl overflow-hidden mb-6 shadow-lg transform transition-transform duration-500 ${member.image ? 'group-hover:scale-[1.02]' : ''}`}>
+                  {member.image && (
+                    <Image
+                      src={member.image}
+                      alt={member.name}
+                      fill
+                      className="object-cover"
+                    />
+                  )}
+                  {!member.image && (
                     <div className="absolute inset-0 flex items-center justify-center">
                       <span className="text-6xl font-bold text-brand-dark/20">?</span>
                     </div>

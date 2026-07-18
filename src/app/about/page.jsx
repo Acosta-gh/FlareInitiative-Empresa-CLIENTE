@@ -74,7 +74,7 @@ export default function AboutPage() {
             <div className="lg:col-span-6 relative">
               <div className="relative z-20">
                 <Slide direction="left" triggerOnce duration={1000}>
-                  <div className="rounded-2xl overflow-hidden shadow-2xl border-8 border-white">
+                  <div className=" overflow-hidden shadow-2xl ">
                     <Image
                       src={firefighter}
                       alt="Firefighter in uniform"
@@ -84,19 +84,6 @@ export default function AboutPage() {
                   </div>
                 </Slide>
               </div>
-
-              <div className="absolute -right-8 -bottom-12 z-30 hidden md:block">
-                <Slide direction="left" triggerOnce duration={1000}>
-                  <div className="rounded-2xl overflow-hidden shadow-2xl border-8 border-white w-64 h-64">
-                    <Image
-                      src={police}
-                      alt="Team of first responders"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                </Slide>
-              </div>
-
               {/* Decorative elements */}
               <div className="absolute -left-12 -top-12 w-48 h-48 bg-brand-orange/10 rounded-full blur-3xl -z-10"></div>
               <div className="absolute right-0 top-1/2 w-64 h-64 bg-brand-blue/5 rounded-full blur-3xl -z-10"></div>
